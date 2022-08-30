@@ -46,4 +46,24 @@ public class ProductWebController {
 		}
 		return optProduct.get().toString();
 	}
+	
+	@RequestMapping(value = "/update", method = RequestMethod.GET)
+	public String showUpdateProductPage(ModelMap model) {
+		return "updateproduct";
+	}
+	
+	@RequestMapping(value = "/updateproduct", method = RequestMethod.POST)
+	public String UpdateProduct(@ModelAttribute("product") Product uiproduct, ModelMap model) {
+		Optional<Product> optproduct= repo.findById(uiproduct.getId());
+		if(optproduct.isEmpty()) {
+			throw new ProductNotFoundException(uiproduct.getId());
+		}
+		Product dbProduct = optproduct.get();
+		dbProduct.setName(uiproduct.getName());
+		dbProduct.setDescription(uiproduct.getDescription());
+		dbProduct.setPrice(uiproduct.getPrice());
+		repo.save(dbProduct);
+		model.addAttribute("products", repo.findAll());
+		return "addproduct";
+	}
 }
